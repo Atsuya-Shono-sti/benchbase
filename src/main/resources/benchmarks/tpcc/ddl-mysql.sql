@@ -11,7 +11,7 @@ DROP TABLE IF EXISTS stock;
 DROP TABLE IF EXISTS item;
 DROP TABLE IF EXISTS warehouse;
 
-CREATE TABLE warehouse (
+CREATE ROWSTORE TABLE warehouse (
     w_id       int            NOT NULL,
     w_ytd      decimal(12, 2) NOT NULL,
     w_tax      decimal(4, 4)  NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE warehouse (
     PRIMARY KEY (w_id)
 );
 
-CREATE TABLE item (
+CREATE ROWSTORE TABLE item (
     i_id    int           NOT NULL,
     i_name  varchar(24)   NOT NULL,
     i_price decimal(5, 2) NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE item (
     PRIMARY KEY (i_id)
 );
 
-CREATE TABLE stock (
+CREATE ROWSTORE TABLE stock (
     s_w_id       int           NOT NULL,
     s_i_id       int           NOT NULL,
     s_quantity   int           NOT NULL,
@@ -51,12 +51,10 @@ CREATE TABLE stock (
     s_dist_08    char(24)      NOT NULL,
     s_dist_09    char(24)      NOT NULL,
     s_dist_10    char(24)      NOT NULL,
-    FOREIGN KEY (s_w_id) REFERENCES warehouse (w_id) ON DELETE CASCADE,
-    FOREIGN KEY (s_i_id) REFERENCES item (i_id) ON DELETE CASCADE,
     PRIMARY KEY (s_w_id, s_i_id)
 );
 
-CREATE TABLE district (
+CREATE ROWSTORE TABLE district (
     d_w_id      int            NOT NULL,
     d_id        int            NOT NULL,
     d_ytd       decimal(12, 2) NOT NULL,
@@ -68,11 +66,10 @@ CREATE TABLE district (
     d_city      varchar(20)    NOT NULL,
     d_state     char(2)        NOT NULL,
     d_zip       char(9)        NOT NULL,
-    FOREIGN KEY (d_w_id) REFERENCES warehouse (w_id) ON DELETE CASCADE,
     PRIMARY KEY (d_w_id, d_id)
 );
 
-CREATE TABLE customer (
+CREATE ROWSTORE TABLE customer (
     c_w_id         int            NOT NULL,
     c_d_id         int            NOT NULL,
     c_id           int            NOT NULL,
@@ -94,11 +91,10 @@ CREATE TABLE customer (
     c_since        timestamp      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     c_middle       char(2)        NOT NULL,
     c_data         varchar(500)   NOT NULL,
-    FOREIGN KEY (c_w_id, c_d_id) REFERENCES district (d_w_id, d_id) ON DELETE CASCADE,
     PRIMARY KEY (c_w_id, c_d_id, c_id)
 );
 
-CREATE TABLE history (
+CREATE ROWSTORE TABLE history (
     h_c_id   int           NOT NULL,
     h_c_d_id int           NOT NULL,
     h_c_w_id int           NOT NULL,
@@ -106,12 +102,10 @@ CREATE TABLE history (
     h_w_id   int           NOT NULL,
     h_date   timestamp     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     h_amount decimal(6, 2) NOT NULL,
-    h_data   varchar(24)   NOT NULL,
-    FOREIGN KEY (h_c_w_id, h_c_d_id, h_c_id) REFERENCES customer (c_w_id, c_d_id, c_id) ON DELETE CASCADE,
-    FOREIGN KEY (h_w_id, h_d_id) REFERENCES district (d_w_id, d_id) ON DELETE CASCADE
+    h_data   varchar(24)   NOT NULL
 );
 
-CREATE TABLE oorder (
+CREATE ROWSTORE TABLE oorder (
     o_w_id       int       NOT NULL,
     o_d_id       int       NOT NULL,
     o_id         int       NOT NULL,
@@ -120,20 +114,17 @@ CREATE TABLE oorder (
     o_ol_cnt     int       NOT NULL,
     o_all_local  int       NOT NULL,
     o_entry_d    timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (o_w_id, o_d_id, o_id),
-    FOREIGN KEY (o_w_id, o_d_id, o_c_id) REFERENCES customer (c_w_id, c_d_id, c_id) ON DELETE CASCADE,
-    UNIQUE (o_w_id, o_d_id, o_c_id, o_id)
+    PRIMARY KEY (o_w_id, o_d_id, o_id)
 );
 
-CREATE TABLE new_order (
+CREATE ROWSTORE TABLE new_order (
     no_w_id int NOT NULL,
     no_d_id int NOT NULL,
     no_o_id int NOT NULL,
-    FOREIGN KEY (no_w_id, no_d_id, no_o_id) REFERENCES oorder (o_w_id, o_d_id, o_id) ON DELETE CASCADE,
     PRIMARY KEY (no_w_id, no_d_id, no_o_id)
 );
 
-CREATE TABLE order_line (
+CREATE ROWSTORE TABLE order_line (
     ol_w_id        int           NOT NULL,
     ol_d_id        int           NOT NULL,
     ol_o_id        int           NOT NULL,
@@ -144,8 +135,6 @@ CREATE TABLE order_line (
     ol_supply_w_id int           NOT NULL,
     ol_quantity    int           NOT NULL,
     ol_dist_info   char(24)      NOT NULL,
-    FOREIGN KEY (ol_w_id, ol_d_id, ol_o_id) REFERENCES oorder (o_w_id, o_d_id, o_id) ON DELETE CASCADE,
-    FOREIGN KEY (ol_supply_w_id, ol_i_id) REFERENCES stock (s_w_id, s_i_id) ON DELETE CASCADE,
     PRIMARY KEY (ol_w_id, ol_d_id, ol_o_id, ol_number)
 );
 

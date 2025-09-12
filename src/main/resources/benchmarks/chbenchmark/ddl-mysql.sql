@@ -1,9 +1,9 @@
 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 
-DROP TABLE IF EXISTS supplier CASCADE;
-DROP TABLE IF EXISTS nation CASCADE;
-DROP TABLE IF EXISTS region CASCADE;
+DROP TABLE IF EXISTS supplier;
+DROP TABLE IF EXISTS nation;
+DROP TABLE IF EXISTS region;
 
 CREATE TABLE region (
     r_regionkey int       NOT NULL,
@@ -17,7 +17,6 @@ CREATE TABLE nation (
     n_name      char(25)  NOT NULL,
     n_regionkey int       NOT NULL,
     n_comment   char(152) NOT NULL,
-    FOREIGN KEY (n_regionkey) REFERENCES region (r_regionkey) ON DELETE CASCADE,
     PRIMARY KEY (n_nationkey)
 );
 
@@ -29,7 +28,6 @@ CREATE TABLE supplier (
     su_phone     char(15)       NOT NULL,
     su_acctbal   numeric(12, 2) NOT NULL,
     su_comment   char(101)      NOT NULL,
-    FOREIGN KEY (su_nationkey) REFERENCES nation (n_nationkey) ON DELETE CASCADE,
     PRIMARY KEY (su_suppkey)
 );
 

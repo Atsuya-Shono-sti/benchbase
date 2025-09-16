@@ -1,3 +1,5 @@
+※ singlestore用にmysqlのベンチマークメソッドをカスタムしてます．
+
 # BenchBase
 
 [![BenchBase (Java with Maven)](https://github.com/cmu-db/benchbase/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/cmu-db/benchbase/actions/workflows/maven.yml)
